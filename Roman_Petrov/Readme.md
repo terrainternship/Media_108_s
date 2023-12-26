@@ -7,6 +7,9 @@
 
 ![image](https://github.com/terrainternship/Media_108_s/assets/17458625/18c434a7-5286-454f-b870-a557627102f1)
 
+Заменить volumes до папки со скачанным на диск проектом
+![image](https://github.com/terrainternship/Media_108_s/assets/17458625/8b567eef-0b2b-4fed-b3bf-784ccc6851e6)
+
 После этого можно выполнить команды:
 
 ```
