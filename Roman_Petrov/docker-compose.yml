@@ -1,0 +1,86 @@
+version: '3.7'
+services:
+  redis:
+    image: redis:7
+    container_name: redis_app
+    command: --port 6379
+    expose:
+      - 6379
+    env_file:
+      - .env
+    networks:
+      - media108
+
+  app:
+    build:
+      context: .
+    env_file:
+      - .env
+    container_name: fastapi_app
+    ports:
+      - 9999:8000
+    expose:
+      - 9999
+    depends_on:
+      - redis
+    volumes:
+      - /mnt/d/python/Audio:/fastapi_app/Materials
+      - /mnt/d/python/media108/:/fastapi_app/app/db/
+    networks:
+      - media108
+
+  whisper:
+    image: onerahmet/openai-whisper-asr-webservice:latest
+    container_name: whisper_asr
+    ports:
+      - 9000:9000
+    expose:
+      - 9000
+    environment:
+      - ASR_MODEL=base
+      - ASR_ENGINE=openai_whisper
+    networks:
+      - media108
+
+  celery:
+    build:
+      context: .
+    container_name: celery_app
+    command: [ "/fastapi_app/docker/celery.sh", "worker" ]
+    depends_on:
+      - redis
+      - app
+      - whisper
+    volumes:
+      - /mnt/d/python/media108/:/fastapi_app/app/db/
+      - /mnt/d/python/Audio:/fastapi_app/Materials
+    networks:
+      - media108
+
+  beat:
+    build:
+      context: .
+    container_name: celery_beat_app
+    command: [ "/fastapi_app/docker/celery.sh", "beat" ]
+    depends_on:
+      - redis
+      - app
+    networks:
+      - media108
+
+  flower:
+    build:
+      context: .
+    container_name: flower_app
+    command: [ "/fastapi_app/docker/celery.sh", "flower" ]
+    depends_on:
+      - redis
+      - celery
+      - app
+    ports:
+      - 8888:5555
+    networks:
+      - media108
+
+networks:
+  media108:
