@@ -29,6 +29,7 @@ services:
     networks:
       - media108
 
+  # Запуск виспер контейнера без GPU
   whisper:
     image: onerahmet/openai-whisper-asr-webservice:latest
     container_name: whisper_asr
@@ -41,6 +42,32 @@ services:
       - ASR_ENGINE=openai_whisper
     networks:
       - media108
+
+  # # Запуск виспер контейнера с GPU
+  # whisper:
+  #   image: onerahmet/openai-whisper-asr-webservice:latest-gpu
+  #   container_name: whisper_asr
+  #   ports:
+  #     - 9000:9000
+  #   expose:
+  #     - 9000
+  #   environment:
+  #     - ASR_MODEL=large-v3
+  #     # Раскоментировать, если файл модели лежит на локальном диске
+  #     # - ASR_MODEL_PATH=/data/whisper
+  #     - ASR_ENGINE=openai_whisper
+  #   # Раскоментировать, если файл модели лежит на локальном диске и прописать путь до папки с моделью  
+  #   # volumes:
+  #   #   - c:/Users/yvorlv/.cache/whisper:/data/whisper
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: all
+  #             capabilities: [gpu]
+  #   networks:
+  #     - media108
 
   celery:
     build:
